@@ -1,6 +1,7 @@
 package dt.db;
 
 import android.content.Context;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
 /**
@@ -10,8 +11,8 @@ import android.database.sqlite.SQLiteDatabase;
 public class DataSource
 {
     ///////////////////////////////STATIC//////////////////////////////////////////////
-    private static int  FALSE= 0,
-                        TRUE=  1;
+    private static int FALSE = 0,
+            TRUE = 1;
     ///////////////////////////////////////////////////////////////////////////////////
 
     private SQLiteDatabase mDatabase;
@@ -20,9 +21,41 @@ public class DataSource
     private Context mContext;
 
 
+    public DataSource(Context context, String fileName)
+    {
+        dbMaster = new TableMaster(context, fileName);
+        mContext = context;
+        mDbFilename = fileName;
+        init();
 
 
+        return;
+    }
 
 
+    /**
+     * 1) Is this needed?
+     * 2)
+     */
 
-}
+    private void init()
+    {
+
+        return;
+    }
+
+    public void open() throws SQLException
+    {
+        mDatabase = dbMaster.getWritableDatabase();
+        return;
+    }
+
+
+    public void close()  //TODO: DOUBLECHECK TO MAKE SURE I AM CALLING THIS (onPause???)
+    {
+        dbMaster.close();
+        return;
+    }
+
+
+}       ///// END CLASS /////
