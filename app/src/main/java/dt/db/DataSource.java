@@ -1,8 +1,12 @@
 package dt.db;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+
+import dt.types.Node;
 
 /**
  * Created by ian on 7/9/2017.
@@ -56,6 +60,45 @@ public class DataSource
         dbMaster.close();
         return;
     }
+
+
+//    public Node createOrUpdateNode(Node node)
+//    {
+//
+//        ContentValues contentValues;
+//        Cursor cursor;
+//
+//        contentValues= notebook.toContentValues();
+//        mDatabase.update(Notebook.TABLE, contentValues, Notebook.ID+ "=" +notebook.getGuid(), null);
+//
+//        String  query = "select * from " +Notebook.TABLE
+//                + " where " +Notebook.ID+ "=" +notebook.getGuid();
+//
+//        //Receive update notebook and assign
+//        cursor = mDatabase.rawQuery(query, null);
+//        cursor.moveToFirst();
+//        notebook= Notebook.fromCursor(cursor);
+//        cursor.close();
+//
+//        return notebook;
+//
+//
+//        return
+//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 }       ///// END CLASS /////

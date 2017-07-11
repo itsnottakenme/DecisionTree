@@ -31,20 +31,20 @@ public class TableMaster extends SQLiteOpenHelper
             "create table " + Node.TABLE + "("
                             + Node.ID + " integer primary key autoincrement, "
                             + Node.TEXT + " text not null " + " , "
-                            + Node.PARENT + " integer )";
+                            + Node.CHILD_IDS + " text, "
+                            + Node.PARENT_ID + " integer )";
 
 
 
 
-
-    public static final String CREATE_NODECHILDPAIRS_TABLE=
-            "create table " + NodeChildPair.TABLE + "("
-                    + NodeChildPair.NODE_ID + " integer, "
-                    + NodeChildPair.CHILD_ID + " integer, "
-                    + " unique (" + NodeChildPair.NODE_ID +" , "+ NodeChildPair.CHILD_ID + ") "
-                    + " foreign key (" +NodeChildPair.NODE_ID+ ") references " +Node.TABLE+" (" +Node.ID+ ")"
-                    + " foreign key (" +NodeChildPair.CHILD_ID+ ") references " +Node.TABLE+" (" +Node.ID+ ")"
-                    + " )";
+//    public static final String CREATE_NODECHILDPAIRS_TABLE=
+//            "create table " + NodeChildPair.TABLE + "("
+//                    + NodeChildPair.NODE_ID + " integer, "
+//                    + NodeChildPair.CHILD_ID + " integer, "
+//                    + " unique (" + NodeChildPair.NODE_ID +" , "+ NodeChildPair.CHILD_ID + ") "
+//                    + " foreign key (" +NodeChildPair.NODE_ID+ ") references " +Node.TABLE+" (" +Node.ID+ ")"
+//                    + " foreign key (" +NodeChildPair.CHILD_ID+ ") references " +Node.TABLE+" (" +Node.ID+ ")"
+//                    + " )";
 
 
 
@@ -63,7 +63,7 @@ public class TableMaster extends SQLiteOpenHelper
     public void onCreate(SQLiteDatabase database) //Only is called if DB does not exist
     {
         database.execSQL(CREATE_NODE_TABLE);
-        database.execSQL(CREATE_NODECHILDPAIRS_TABLE);
+        //database.execSQL(CREATE_NODECHILDPAIRS_TABLE);
 
         return;
     }
