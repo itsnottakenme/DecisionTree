@@ -23,7 +23,7 @@ public class TableMaster extends SQLiteOpenHelper
                                     TEMP_DB      = "tempDb.db",
                                     DEBUG_NOTES_DB = "DEBUG_nodes.db",
                                     DEBUG_TEMP_DB      = "tempDb.db";
-    public static final int DATABASE_VERSION = 0;
+    public static final int DATABASE_VERSION = 1;
     /**
      * Node table
      */

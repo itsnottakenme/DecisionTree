@@ -62,29 +62,28 @@ public class DataSource
     }
 
 
-//    public Node createOrUpdateNode(Node node)
-//    {
-//
-//        ContentValues contentValues;
-//        Cursor cursor;
-//
-//        contentValues= notebook.toContentValues();
-//        mDatabase.update(Notebook.TABLE, contentValues, Notebook.ID+ "=" +notebook.getGuid(), null);
-//
-//        String  query = "select * from " +Notebook.TABLE
-//                + " where " +Notebook.ID+ "=" +notebook.getGuid();
-//
-//        //Receive update notebook and assign
-//        cursor = mDatabase.rawQuery(query, null);
-//        cursor.moveToFirst();
-//        notebook= Notebook.fromCursor(cursor);
-//        cursor.close();
-//
-//        return notebook;
-//
-//
-//        return
-//    }
+    public Node createOrUpdateNode(Node node)
+    {
+
+        ContentValues contentValues;
+        Cursor cursor;
+
+        contentValues= node.toContentValues();
+        //TODO: does this create a new row if id is not found in database? updateOnConflict
+        mDatabase.update(Node.TABLE, contentValues, Node.ID+ "=" +node.getId(), null);
+
+        String  query = "select * from " +Node.TABLE
+                + " where " +Node.ID+ "=" +node.getId();
+
+        //Receive update notebook and assign
+        cursor = mDatabase.rawQuery(query, null);
+        cursor.moveToFirst();
+        node= Node.fromCursor(cursor);
+        cursor.close();
+
+        return node;
+
+    }
 
 
 

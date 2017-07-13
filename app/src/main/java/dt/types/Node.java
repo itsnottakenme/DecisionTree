@@ -1,6 +1,7 @@
 package dt.types;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 
 import java.util.List;
 
@@ -108,8 +109,6 @@ public class Node
 
 
 
-
-
         nodeRow.put(Node.ID, getId());
         nodeRow.put(Node.PARENT_ID, getParentId());
         nodeRow.put(Node.TEXT, getText());
@@ -119,6 +118,22 @@ public class Node
 
         return nodeRow;
     }
+
+
+    public static Node fromCursor(Cursor cursor)
+    {
+        Node node = new Node();
+
+
+        node.setId(cursor.getInt(cursor.getColumnIndex(Node.ID)));
+        node.setParentId(cursor.getInt(cursor.getColumnIndex(Node.PARENT_ID)));
+        node.setText(cursor.getString(cursor.getColumnIndex(Node.TEXT)));
+        node.setChildIdList(Util.stringToIntegerList(cursor.getString(cursor.getColumnIndex(Node.CHILD_IDS))));
+
+
+        return node;
+    }
+
 
 
 
