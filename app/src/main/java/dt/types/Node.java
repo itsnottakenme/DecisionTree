@@ -3,6 +3,7 @@ package dt.types;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,6 +13,8 @@ import java.util.List;
 
 public class Node
 {
+
+
     //Table infromation for SQL database
     public static final String
                                 TABLE =        "nodes",
@@ -19,6 +22,15 @@ public class Node
                                 TEXT =         "text", //name of notebook   //todo change to COL_TITLE!!!
                                 PARENT_ID=     "parent_id",
                                 CHILD_IDS=     "child_ids";
+
+    public static final String[] ALL_COLUMNS=
+                               {ID, TEXT, PARENT_ID, CHILD_IDS};
+
+
+
+    //Constants
+    public static final int NO_ID= -1;
+
 
 
 
@@ -41,6 +53,9 @@ public class Node
     public Node()
     {
         id=0;
+        childIdList= new ArrayList<>();
+
+        return;
     }
 
 
@@ -85,6 +100,38 @@ public class Node
         this.text = text;
     }
 
+    public void addChild(int id)
+    {
+        childIdList.add(id);
+        return;
+    }
+    public void removeChild(int id)
+    {
+        childIdList.remove((Integer)id);  //todo double check correct method called!!
+        return;
+    }
+
+
+
+
+    @Override
+    public boolean equals(Object aNode) //todo: NEVER CALLED. WHY?????????
+    {
+        Node node= (Node)aNode;
+        boolean result= false;
+
+
+        if(
+                getId() == node.getId()
+            &&  getParentId() == node.getParentId()
+            &&  getText() == node.getText()
+            &&  Util.integerListToString(node.getChildIdList()).equals(Util.integerListToString(getChildIdList()))
+          )
+        {
+           result= true;
+        }
+        return result;
+    }
 
 
 
@@ -94,12 +141,10 @@ public class Node
 
 
 
-
-
-    /**
-     * todo: GUID is currently only added  if (getGuid()>0). What is the optimal way?
-     * @return
-     */
+        /**
+         * todo: GUID is currently only added  if (getGuid()>0). What is the optimal way?
+         * @return
+         */
     public ContentValues toContentValues()
     {
         ContentValues nodeRow;

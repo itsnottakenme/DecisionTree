@@ -62,16 +62,56 @@ public class DataSource
     }
 
 
-    public Node createOrUpdateNode(Node node)
+    public Node createNode(Node node)
     {
+        Node newNode = null;
+        ContentValues nodeRow;
 
+        Cursor cursor;
+        long insertId = -1;       //TO Avert compiler error
+
+
+        if (node != null)
+        {
+            nodeRow = node.toContentValues();
+
+            try
+            {
+                mDatabase.beginTransaction();
+                insertId = mDatabase.insert(Node.TABLE, null, nodeRow);
+                mDatabase.setTransactionSuccessful();
+            } catch (Exception e)
+            {
+                e.printStackTrace();
+            } finally
+            {
+                mDatabase.endTransaction();
+            }
+
+            cursor = mDatabase.query(Node.TABLE,
+                    Node.ALL_COLUMNS, Node.ID + " = " + insertId, null,
+                    null, null, null);
+            cursor.moveToFirst();
+            newNode = Node.fromCursor(cursor);
+            cursor.close();
+        }
+
+
+        return newNode;
+    }
+
+
+
+    public Node updateNode(Node node)       //todo: code is EXACT duplicate of create node
+    {
         ContentValues contentValues;
         Cursor cursor;
+        int result;
 
         contentValues= node.toContentValues();
         //TODO: does this create a new row if id is not found in database? updateOnConflict
-        mDatabase.update(Node.TABLE, contentValues, Node.ID+ "=" +node.getId(), null);
-
+        result= mDatabase.update(Node.TABLE, contentValues, Node.ID+ "=" +node.getId(), null);
+        result++;
         String  query = "select * from " +Node.TABLE
                 + " where " +Node.ID+ "=" +node.getId();
 
@@ -82,7 +122,6 @@ public class DataSource
         cursor.close();
 
         return node;
-
     }
 
 
