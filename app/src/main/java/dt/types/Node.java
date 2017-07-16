@@ -182,20 +182,40 @@ public class Node
 
 
 
-//    public static Node createTestData
-//    {
-//        List<>
-//        Node topLevelNodes= new Node();
-//
-//
-//        topLevelNodes.parent= null; //top level node
-//        topLevelNodes.text="I have pain";
-//
-//
-//
-//
-//
-//    }
+    public static List<Node> createTestData()
+    {
+        List<Node> nodeList= new ArrayList();
+        Node node;
+
+        node= new Node();
+        node.setId(1);
+        node.setParentId(node.NO_ID);
+        node.setText("Pain");
+        node.addChild(3);
+        node.addChild(4);
+        nodeList.add(node);
+
+        node= new Node();
+        node.setId(2);
+        node.setParentId(node.NO_ID);
+        node.setText("Autism");
+        nodeList.add(node);
+
+        node= new Node();
+        node.setId(3);
+        node.setParentId(1);
+        node.setText("back pain");
+        nodeList.add(node);
+
+
+        node= new Node();
+        node.setId(4);
+        node.setParentId(1);
+        node.setText("ball pain");
+        nodeList.add(node);
+
+        return nodeList;
+    }
 
 
 }
