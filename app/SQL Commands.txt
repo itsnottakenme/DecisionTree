@@ -1,0 +1,5 @@
+
+
+SELECT text, _id FROM nodes where parent_id=-1;
+
+SELECT text, _id FROM nodes where parent_id=;

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="kanana.decisiontree">
+          package="dt">
 
     <application
         android:allowBackup="true"
@@ -19,6 +19,22 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-    </application>
+
+
+
+    <!-- android:name - name of ContentProvider subclass to link authority request. This
+                        is NOT referenced explicity when request made
+         android:authority - This is the (unique identifier) proxy name used to invoke the
+                             ContentProvider from android:name
+
+    -->
+    <provider
+
+        android:name="dt.db.NodeProvider"
+        android:authorities="${applicationId}"
+        android:exported="true">
+    </provider>
+
+</application>
 
 </manifest>

@@ -1,4 +1,4 @@
-package kanana.decisiontree;
+package dt;
 
 import org.junit.Test;
 

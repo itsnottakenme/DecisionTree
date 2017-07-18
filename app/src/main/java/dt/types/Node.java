@@ -1,7 +1,10 @@
 package dt.types;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
+import android.support.compat.BuildConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +21,8 @@ public class Node
     //Table infromation for SQL database
     public static final String
                                 TABLE =        "nodes",
+
+
                                 ID =           "_id",    //primary key
                                 TEXT =         "text", //name of notebook   //todo change to COL_TITLE!!!
                                 PARENT_ID=     "parent_id",
@@ -35,6 +40,19 @@ public class Node
 
 
 
+    //todo: these URIs are probably incorrect....
+    public static final String PROVIDER_NAME = "dt.db.NodeProvider";
+            //BuildConfig.APPLICATION_ID+".dt.db.NodeProvider";
+
+            //"kanana.decisiontree.dt.db.NodeProvider";
+
+
+
+    /** A uri to do operations on cust_master table. A content provider is identified by its uri */
+    public static final Uri CONTENT_URI = Uri.parse("content://" + PROVIDER_NAME + "/nodes" );
+
+    /** Constants to identify the requested operation
+
 
 
 
@@ -48,6 +66,8 @@ public class Node
     private int parentId;
     private List<Integer> childIdList;
     private String text;
+
+    int ordinal; //todo: IMPLEMENT IN DATABASE!!!!
 
 
     public Node()
@@ -169,12 +189,17 @@ public class Node
     {
         Node node = new Node();
 
-
-        node.setId(cursor.getInt(cursor.getColumnIndex(Node.ID)));
-        node.setParentId(cursor.getInt(cursor.getColumnIndex(Node.PARENT_ID)));
-        node.setText(cursor.getString(cursor.getColumnIndex(Node.TEXT)));
-        node.setChildIdList(Util.stringToIntegerList(cursor.getString(cursor.getColumnIndex(Node.CHILD_IDS))));
-
+        if (cursor==null)
+        {
+            node.setId(cursor.getInt(cursor.getColumnIndex(Node.ID)));
+            node.setParentId(cursor.getInt(cursor.getColumnIndex(Node.PARENT_ID)));
+            node.setText(cursor.getString(cursor.getColumnIndex(Node.TEXT)));
+            node.setChildIdList(Util.stringToIntegerList(cursor.getString(cursor.getColumnIndex(Node.CHILD_IDS))));
+        }
+        else
+        {
+            node= null;
+        }
 
         return node;
     }

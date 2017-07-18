@@ -100,6 +100,76 @@ public class DataSource
         return newNode;
     }
 
+    /**
+     * Returns a cursor to all nodes that have the given parent_id
+     * @param parent_id
+     * @return
+     */
+    Cursor getNodes(String selection)
+    {
+
+        return mDatabase.query(Node.TABLE,
+                new String[]{Node.ID, Node.TEXT}, /*Node.ID + " = " + parent_id*/selection, null,
+                    null, null, null);
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /***
+     *
+     * @param node
+     * @return the id of a newly created record or 0 if not successful
+     */
+//    public long createNodeWithProvider(Node node)
+//    {
+//        ContentValues nodeRow;
+//
+//
+//        long insertId = -1;       //TO Avert compiler error
+//
+//
+//        if (node != null)
+//        {
+//            nodeRow = node.toContentValues();
+//
+//            try
+//            {
+//                mDatabase.beginTransaction();
+//                insertId = mDatabase.insert(Node.TABLE, null, nodeRow);
+//                mDatabase.setTransactionSuccessful();
+//            } catch (Exception e)
+//            {
+//                e.printStackTrace();
+//            } finally
+//            {
+//                mDatabase.endTransaction();
+//            }
+//        }
+//
+//
+//        return insertId;
+//    }
+
 
 
     public Node updateNode(Node node)       //todo: code is EXACT duplicate of create node
