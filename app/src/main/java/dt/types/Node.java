@@ -33,6 +33,9 @@ public class Node
 
 
 
+    public static final int ID_NONE= -1;
+
+
     //Constants
     public static final int NO_ID= -1;
 
