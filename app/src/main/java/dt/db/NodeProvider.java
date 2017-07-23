@@ -12,6 +12,16 @@ import android.support.annotation.Nullable;
  * Created by ian on 7/16/2017.
  */
 
+/**
+ * This ContentProvider needs to handle
+ * 1) Insert node
+ * 2) Delete Node
+ * 3) Query for all children of a parent node
+ * 4) Query for a single node's data
+ * 5)
+ *
+ *
+ */
 public class NodeProvider extends ContentProvider
 {
 

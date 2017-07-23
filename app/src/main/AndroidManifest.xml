@@ -9,25 +9,38 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+
         <activity
             android:name="dt.ui.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
 
 
 
-    <!-- android:name - name of ContentProvider subclass to link authority request. This
-                        is NOT referenced explicity when request made
-         android:authority - This is the (unique identifier) proxy name used to invoke the
-                             ContentProvider from android:name
+        <activity android:name="dt.ui.EditNodeActivity"
+                  android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="EditNodeActivity.intent.action.Launch" />
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
 
-    -->
+
+
+
+        <!-- android:name - name of ContentProvider subclass to link authority request. This
+                            is NOT referenced explicity when request made
+             android:authority - This is the (unique identifier) proxy name used to invoke the
+                                 ContentProvider from android:name
+
+        -->
     <provider
 
         android:name="dt.db.NodeProvider"

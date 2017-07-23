@@ -14,5 +14,13 @@ public class DTIntent
                         UPDATE= "update";
 
 
+    public static String    LOADER_ACTION_TYPE="LOADER_ACTION_TYPE",        //key
+
+
+                            LOADER_LISTVIEW="LOADER_LISTVIEW",
+                            LOADER_PARENTID="LOADER_PARENTID";
+
+
+
 
 }

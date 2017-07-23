@@ -1,5 +1,6 @@
 package dt.ui;
 
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
@@ -15,6 +16,7 @@ import android.support.v7.widget.LinearLayoutCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -33,8 +35,18 @@ import dt.R;
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>
 
 {
+    /**
+     * id for Loader has to be unique. These things should be contained in bundle
+
+    private static final int    LOADER_LISTVIEW=100,
+                                LOADER_PARENTID=101;
+     */
+
+
+    LinearLayout mLlParents;
     ListView mChildListView;
     SimpleCursorAdapter mAdapter;
+    Button bAdd;
 
     private DataSource mDataSource;
     private String mDbFilename;
@@ -49,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         setContentView(R.layout.activity_main);
 
         mChildListView= (ListView)findViewById(R.id.node_listview);
-
+        bAdd= (Button)findViewById(R.id.add_button);
 
 
 
@@ -83,9 +95,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         // Prepare the loader.  Either re-connect with an existing one,
         // or start a new one.
         bundle.putString(DTIntent.ACTION_TYPE, DTIntent.VIEW);
+        /**
+         * todo: need have parentId here in case returning from EditNoteActivity. How
+         * do I persist that data? Use Loader to retrieve this?
+         */
+
         bundle.putInt(Node.ID, Node.ID_NONE);
 
-        getSupportLoaderManager().initLoader(0, bundle, this);        // 0 indicates default instruction
+        getSupportLoaderManager().initLoader(788734, bundle, this);        // 0 indicates default instruction
         /////////////////////////////////////////////////////////
 
         setupListeners();
@@ -93,7 +110,18 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         return;
     }
 
-    void setupListeners()
+    private void updateParentScrollView(int nodeId, String nodeText)
+    {
+        TextView tvParent;
+        mLlParents= (LinearLayout)findViewById(R.id.linearlayout_parents);
+
+        tvParent=new TextView(this);
+        tvParent.setText(nodeId+": "+nodeText);
+        tvParent.setId(nodeId);     //
+        mLlParents.addView(tvParent);
+
+    }
+    private void setupListeners()
     {
 
         mChildListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
@@ -121,11 +149,32 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 bundle.putString(DTIntent.ACTION_TYPE, DTIntent.VIEW);
                 bundle.putString(Node.TEXT, nodeText);
                 bundle.putInt(Node.ID, nodeId);
+                //todo: add loader LOADER_LISTEVIEW for loader cases
 
                 //todo: Put an INTENT in bundle to
-                getSupportLoaderManager().initLoader(nodeId , bundle, MainActivity.this);
+                getSupportLoaderManager().initLoader(77777, bundle, MainActivity.this);
 
                 return;
+            }
+        });
+
+        /**
+         * Launches EditNoteActivity with a new note
+         */
+        bAdd.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                Intent intent= new Intent(getApplicationContext(), EditNodeActivity.class);
+
+                intent.putExtra(Node.ID, -1);
+                //todo: need to add parentId for new node....
+                intent.putExtra(Node.TEXT, "");
+                startActivity(intent);
+
+                return;
+
             }
         });
 
@@ -146,31 +195,34 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         Loader<Cursor> loaderCursor= null;
 
 
-        /**
-         * Unpack bundle and decide action
-         */
-        if (args!=null)
-        {
+                /**
+                 * Unpack bundle and decide action
+                 */
+                if (args != null)
+                {
 
-            intentString = (String) args.get(DTIntent.ACTION_TYPE);
+                    intentString = (String) args.get(DTIntent.ACTION_TYPE);
 
 
-            if (intentString.equals(DTIntent.VIEW))
-            {
-                nodeId = (int) args.get(Node.ID);
-                loaderCursor = new CursorLoader(this, uri, new String[]{Node.ID, Node.TEXT},
-                        "parent_id=" + nodeId, null, null); //todo: change "parent_id=-1"
-
-            } else
-            {
-                Toast.makeText(getApplicationContext(), "Not handled:" + intentString, Toast.LENGTH_SHORT).show();
-            }
-        }
-        else
-        {
-            Toast.makeText(getApplicationContext(), "Bundle is null", Toast.LENGTH_SHORT).show();
-        }
-
+                    if (intentString.equals(DTIntent.VIEW))
+                    {
+                        nodeId = (int) args.get(Node.ID);
+                        loaderCursor = new CursorLoader(this, uri, new String[]{Node.ID, Node.TEXT},
+                                "parent_id=" + nodeId, null, null); //todo: change "parent_id=-1"
+                        if (nodeId > 0)
+                        {
+                            //todo: this is done on the main thread I believe. Only CursorLoaer is
+                            //run in a different thread
+                            updateParentScrollView(nodeId, (String) args.get(Node.TEXT));
+                        }
+                    } else
+                    {
+                        Toast.makeText(getApplicationContext(), "Not handled:" + intentString, Toast.LENGTH_SHORT).show();
+                    }
+                } else
+                {
+                    Toast.makeText(getApplicationContext(), "Bundle is null", Toast.LENGTH_SHORT).show();
+                }
 
 
 
@@ -180,6 +232,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data)
     {
+        /**
+         * todo: Need to create cases for different loader calls to NodeProvider
+         * 1) Query for ListView items (mAdapter)
+         * 2) Query for parentId of items in ListView todo: many ways what is best???
+         *  That's all for this class I think
+         */
+
+
         mAdapter.swapCursor(data);
     }
 

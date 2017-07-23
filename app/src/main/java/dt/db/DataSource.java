@@ -109,8 +109,7 @@ public class DataSource
     {
 
         return mDatabase.query(Node.TABLE,
-                new String[]{Node.ID, Node.TEXT}, /*Node.ID + " = " + parent_id*/selection, null,
-                    null, null, null);
+                new String[]{Node.ID, Node.TEXT}, selection, null, null, null, null);
 
     }
 
