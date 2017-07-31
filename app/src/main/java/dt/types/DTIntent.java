@@ -22,5 +22,9 @@ public class DTIntent
 
 
 
+    public static String DATABASE_NAME= "DATABASE_NAME";                //KEY
+
+
+
 
 }

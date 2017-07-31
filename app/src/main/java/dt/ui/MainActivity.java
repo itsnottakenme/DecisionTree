@@ -50,7 +50,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     private DataSource mDataSource;
     private String mDbFilename;
-
+    private int mParentId=-1; //todo: Find a better way. Probably subclass ScrollView and then
+                              //get from there
+                              // the id of the bottom-most parent
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -65,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
 
 
-        //set the filename of the database
+       //set the filename of the database
        // mDbFilename = getIntent().getStringExtra(NdbIntent.DATABASE_NAME);
         if (mDbFilename == null)
         {
@@ -98,6 +100,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         /**
          * todo: need have parentId here in case returning from EditNoteActivity. How
          * do I persist that data? Use Loader to retrieve this?
+         *
+         * Nooooooooooooooooo! ONly a single record query. Instead get it from the
+         * main thread and then store it in SharedPreferences
          */
 
         bundle.putInt(Node.ID, Node.ID_NONE);
@@ -126,6 +131,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         mChildListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
+
+            /**
+             * This method reloads the activity using the parent id of the clicked item in ListView
+             * @param parent
+             * @param view
+             * @param position
+             * @param id
+             */
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
                 LinearLayout llItem= (LinearLayout)view;
@@ -137,6 +150,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                  * Get data from clicked item
                  */
                 nodeId= Integer.parseInt(((TextView)llItem.findViewById(R.id.node_id)).getText().toString());
+                mParentId= nodeId; //when reloads set next parent id
                 nodeText= ((TextView)llItem.findViewById(R.id.node_text)).getText().toString();
 
                 /**
@@ -149,6 +163,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 bundle.putString(DTIntent.ACTION_TYPE, DTIntent.VIEW);
                 bundle.putString(Node.TEXT, nodeText);
                 bundle.putInt(Node.ID, nodeId);
+
                 //todo: add loader LOADER_LISTEVIEW for loader cases
 
                 //todo: Put an INTENT in bundle to
@@ -168,9 +183,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             {
                 Intent intent= new Intent(getApplicationContext(), EditNodeActivity.class);
 
+                intent.putExtra(DTIntent.ACTION_TYPE, DTIntent.INSERT);
+                intent.putExtra(Node.PARENT_ID, mParentId);
                 intent.putExtra(Node.ID, -1);
                 //todo: need to add parentId for new node....
                 intent.putExtra(Node.TEXT, "");
+                intent.putExtra(DTIntent.DATABASE_NAME, mDbFilename);
                 startActivity(intent);
 
                 return;
@@ -184,6 +202,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         return;
     }
 
+    @Override
+    protected void onPause()
+    {
+
+        super.onPause();
+    }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args)

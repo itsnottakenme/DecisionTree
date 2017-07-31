@@ -100,6 +100,29 @@ public class DataSource
         return newNode;
     }
 
+
+    public long insertNode(ContentValues cvNode)
+    {
+        long insertId = -1;       //TO Avert compiler error
+
+        try
+        {
+            mDatabase.beginTransaction();
+            insertId = mDatabase.insert(Node.TABLE, null, cvNode);
+            mDatabase.setTransactionSuccessful();
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        } finally
+        {
+            mDatabase.endTransaction();
+        }
+        return insertId;
+    }
+
+
+
+
     /**
      * Returns a cursor to all nodes that have the given parent_id
      * @param parent_id
