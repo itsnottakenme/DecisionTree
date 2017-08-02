@@ -47,6 +47,9 @@ public class EditNodeActivity extends AppCompatActivity implements LoaderManager
         mDataSource.open(); //opens DB
 
 
+        etText.setText(getIntent().getExtras().getString(Node.TEXT)); //todo: I should really get text from DB, not intent!
+        etText.setSelection(etText.getText().length());
+
 
         setupListeners();
         return;
@@ -61,8 +64,9 @@ public class EditNodeActivity extends AppCompatActivity implements LoaderManager
 
                 String intentAction;
                 //String text= etText.getText().toString();
-                Node node;
+
                 ContentValues cvNode= new ContentValues();
+                int nodeId;
 
 
 
@@ -103,7 +107,15 @@ public class EditNodeActivity extends AppCompatActivity implements LoaderManager
                 }
                 else if (intentAction.equals(DTIntent.UPDATE))
                 {
-                    Toast.makeText(EditNodeActivity.this, "IMPLEMENT UPDATE!!!", Toast.LENGTH_SHORT).show();
+
+                    cvNode.put(Node.TEXT, etText.getText().toString());
+                    cvNode.put(Node.PARENT_ID, getIntent().getIntExtra(Node.PARENT_ID,-1));
+                    //cvNode.put(Node.ID, getIntent().getIntExtra(Node.ID,-1));
+                    nodeId= getIntent().getIntExtra(Node.ID,-1);
+                    mDataSource.updateNode(cvNode, Node.ID+"="+nodeId);
+
+                    Toast.makeText(EditNodeActivity.this, "Node updated", Toast.LENGTH_SHORT).show();
+                    finish();
                 }
                 else
                 {
@@ -114,7 +126,20 @@ public class EditNodeActivity extends AppCompatActivity implements LoaderManager
 
             }
         });
+        bCancel.setOnClickListener(new View.OnClickListener()
+        {
+                @Override
+                public void onClick(View view)
+                {
+                    finish();
+                    return;
+                }
+        });
 
+
+
+
+        return;
     }
 
 

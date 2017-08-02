@@ -125,7 +125,7 @@ public class DataSource
 
     /**
      * Returns a cursor to all nodes that have the given parent_id
-     * @param parent_id
+     * @param
      * @return
      */
     Cursor getNodes(String selection)
@@ -157,64 +157,48 @@ public class DataSource
 
 
 
-    /***
-     *
-     * @param node
-     * @return the id of a newly created record or 0 if not successful
-     */
-//    public long createNodeWithProvider(Node node)
-//    {
-//        ContentValues nodeRow;
-//
-//
-//        long insertId = -1;       //TO Avert compiler error
-//
-//
-//        if (node != null)
-//        {
-//            nodeRow = node.toContentValues();
-//
-//            try
-//            {
-//                mDatabase.beginTransaction();
-//                insertId = mDatabase.insert(Node.TABLE, null, nodeRow);
-//                mDatabase.setTransactionSuccessful();
-//            } catch (Exception e)
-//            {
-//                e.printStackTrace();
-//            } finally
-//            {
-//                mDatabase.endTransaction();
-//            }
-//        }
-//
-//
-//        return insertId;
-//    }
-
-
-
-    public Node updateNode(Node node)       //todo: code is EXACT duplicate of create node
+    public long updateNode(ContentValues updateValues, String whereClause)
     {
-        ContentValues contentValues;
-        Cursor cursor;
-        int result;
+        long rowsUpdated= 0;       //TO Avert compiler error
 
-        contentValues= node.toContentValues();
-        //TODO: does this create a new row if id is not found in database? updateOnConflict
-        result= mDatabase.update(Node.TABLE, contentValues, Node.ID+ "=" +node.getId(), null);
-        result++;
-        String  query = "select * from " +Node.TABLE
-                + " where " +Node.ID+ "=" +node.getId();
-
-        //Receive update notebook and assign
-        cursor = mDatabase.rawQuery(query, null);
-        cursor.moveToFirst();
-        node= Node.fromCursor(cursor);
-        cursor.close();
-
-        return node;
+        try
+        {
+            mDatabase.beginTransaction();
+            rowsUpdated = mDatabase.update(Node.TABLE, updateValues, whereClause, null);
+            mDatabase.setTransactionSuccessful();
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        } finally
+        {
+            mDatabase.endTransaction();
+        }
+        return rowsUpdated;
     }
+
+
+
+//    public Node updateNode(Node node)       //todo: code is EXACT duplicate of create node
+//    {
+//        ContentValues contentValues;
+//        Cursor cursor;
+//        int result;
+//
+//        contentValues= node.toContentValues();
+//        //TODO: does this create a new row if id is not found in database? updateOnConflict
+//        result= mDatabase.update(Node.TABLE, contentValues, Node.ID+ "=" +node.getId(), null);
+//        result++;
+//        String  query = "select * from " +Node.TABLE
+//                + " where " +Node.ID+ "=" +node.getId();
+//
+//        //Receive update notebook and assign
+//        cursor = mDatabase.rawQuery(query, null);
+//        cursor.moveToFirst();
+//        node= Node.fromCursor(cursor);
+//        cursor.close();
+//
+//        return node;
+//    }
 
 
 

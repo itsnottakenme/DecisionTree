@@ -19,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,6 +54,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private int mParentId=-1; //todo: Find a better way. Probably subclass ScrollView and then
                               //get from there
                               // the id of the bottom-most parent
+
+    private int mLoaderCounterId=0; //gives the unique id for each loader instance
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -107,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         bundle.putInt(Node.ID, Node.ID_NONE);
 
-        getSupportLoaderManager().initLoader(788734, bundle, this);        // 0 indicates default instruction
+        getSupportLoaderManager().initLoader(mLoaderCounterId++, bundle, this);        // 0 indicates default instruction
         /////////////////////////////////////////////////////////
 
         setupListeners();
@@ -115,15 +119,33 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         return;
     }
 
+    /**
+     * ASSERT nodeText != null
+     *  adds new TextView
+     *
+     * ASSERT nodeText == null
+     *  method does nothing
+     *
+     *
+     *      todo: Not sure if current way makes sense or not.. maybe rename to addScrollviewChild
+     *
+     * @param nodeId
+     * @param nodeText
+     */
     private void updateParentScrollView(int nodeId, String nodeText)
     {
         TextView tvParent;
         mLlParents= (LinearLayout)findViewById(R.id.linearlayout_parents);
 
-        tvParent=new TextView(this);
-        tvParent.setText(nodeId+": "+nodeText);
-        tvParent.setId(nodeId);     //
-        mLlParents.addView(tvParent);
+        if (nodeText!=null)
+        {
+            tvParent = new TextView(this);
+            tvParent.setText(nodeId + ": " + nodeText);
+            tvParent.setId(nodeId);     //
+            mLlParents.addView(tvParent);
+        }
+
+        return;
 
     }
     private void setupListeners()
@@ -151,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                  */
                 nodeId= Integer.parseInt(((TextView)llItem.findViewById(R.id.node_id)).getText().toString());
                 mParentId= nodeId; //when reloads set next parent id
-                nodeText= ((TextView)llItem.findViewById(R.id.node_text)).getText().toString();
+                nodeText= ((TextView)llItem.findViewById(R.id.node_text)).getText().toString(); //tod: not needed I think
 
                 /**
                  *  todo:
@@ -164,13 +186,39 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 bundle.putString(Node.TEXT, nodeText);
                 bundle.putInt(Node.ID, nodeId);
 
-                //todo: add loader LOADER_LISTEVIEW for loader cases
+                //todo: add loader LOADER_LISTVIEW for loader cases
 
                 //todo: Put an INTENT in bundle to
-                getSupportLoaderManager().initLoader(77777, bundle, MainActivity.this);
+                getSupportLoaderManager().initLoader(mLoaderCounterId++, bundle, MainActivity.this);
 
                 return;
             }
+        });
+
+        /**
+         * Long clicking item -> load edit activity
+         */
+        mChildListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener()
+        {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> arg0, View view, int position, long id)
+                {
+                    Intent intent= new Intent(getApplicationContext(), EditNodeActivity.class);
+                    LinearLayout llItem= (LinearLayout)view;
+                    int nodeId;
+                    String nodeText;
+
+                    nodeText= ((TextView)llItem.findViewById(R.id.node_text)).getText().toString(); //tod: not needed I think
+                    nodeId= Integer.parseInt(((TextView)llItem.findViewById(R.id.node_id)).getText().toString());
+                    intent.putExtra(DTIntent.ACTION_TYPE, DTIntent.UPDATE);
+                    intent.putExtra(Node.ID, nodeId);
+                    intent.putExtra(Node.PARENT_ID, mParentId);
+                    intent.putExtra(Node.TEXT, nodeText);
+                    intent.putExtra(DTIntent.DATABASE_NAME, mDbFilename);
+                    startActivityForResult(intent,0);   //todo: add requestcode if needed
+
+                    return true;
+                }
         });
 
         /**
@@ -189,7 +237,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 //todo: need to add parentId for new node....
                 intent.putExtra(Node.TEXT, "");
                 intent.putExtra(DTIntent.DATABASE_NAME, mDbFilename);
-                startActivity(intent);
+                startActivityForResult(intent,0);   //todo: add requestcode if needed
 
                 return;
 
@@ -202,11 +250,89 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         return;
     }
 
+
+    @Override
+    public void onBackPressed()
+    {
+        /***
+         *
+         */
+        Bundle bundle= new Bundle();
+        int children= 0;        //number of child views
+        int nodeId;
+
+        if (mLlParents!= null)
+        {
+            children=  mLlParents.getChildCount();
+        }
+
+        if (children == 0)
+        {       //assert: scrollview empty
+            super.onBackPressed();
+        }
+        else
+        {
+            mLlParents.removeViewAt(children-1); //todo: 1 off error????????
+            children--;
+            //Get data to reload child view
+            if (children==0)
+            {
+                nodeId=-1;  //no parents left so just reload top level nodes
+            }
+            else
+            {
+                TextView tvItem= (TextView)mLlParents.getChildAt(children-1);
+                nodeId= tvItem.getId();
+
+//                //LinearLayout llItem= (LinearLayout)mLlParents.getChildAt(children-1);
+//                TextView tvId= (TextView)llItem.findViewById(R.id.node_id);
+//                String text= tvId.getText().toString();
+//                nodeId= Integer.parseInt(text);
+
+                //nodeId = Integer.parseInt(((TextView) mLlParents.getChildAt(children-1).findViewById(R.id.node_id)).getText().toString());
+
+            }
+            bundle.putInt(Node.ID, nodeId);
+           // bundle.putString(Node.TEXT,);
+            bundle.putString(DTIntent.ACTION_TYPE, DTIntent.VIEW);
+            getSupportLoaderManager().initLoader(mLoaderCounterId++, bundle, MainActivity.this);
+
+        }
+
+
+
+        return;
+    }
+
+    private void updateListView()
+    {
+
+    }
+
+
     @Override
     protected void onPause()
     {
 
         super.onPause();
+    }
+
+    /**
+     * Assert: Reloads children listview
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        Bundle bundle= new Bundle();
+
+        //reload node listview
+        bundle.putInt(Node.ID, mParentId);
+        bundle.putString(DTIntent.ACTION_TYPE, DTIntent.VIEW);
+        getSupportLoaderManager().initLoader(mLoaderCounterId++, bundle, MainActivity.this);
+        return;
     }
 
     @Override
@@ -237,6 +363,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                         {
                             //todo: this is done on the main thread I believe. Only CursorLoaer is
                             //run in a different thread
+
+                            //todo: this should not be called for onBackPressed() case MAYBEEEEEEEEE
                             updateParentScrollView(nodeId, (String) args.get(Node.TEXT));
                         }
                     } else
